@@ -67,7 +67,6 @@ def save_result():
 
 # 根据鼠标所在位置坐标返回格子坐标
 def position(mouse_post):
-    r = 20
     p = 0
     post = [0, 0]
     for i in mouse_post:
@@ -251,12 +250,9 @@ def paint_circle_next():
     pygame.draw.circle(screen, black, [625, 145], 20, 0)
 
 
-# def paint_game_records():
-#     pygame.draw.rect(screen, my_blue, (600, 0, 50, 200), 0)
-#     screen.blit(text9, (610, 10))
-#     screen.blit(text10, (610, 55))
-#     screen.blit(text11, (610, 100))
-#     screen.blit(text12, (610, 150))
+def paint_game_restart():
+    pygame.draw.rect(screen, black, [100, 540, 100, 30], 5)
+    screen.blit(game_restart_text, (110, 545))
 
 
 # 刷新背景
@@ -264,6 +260,8 @@ def background():
     screen.fill([87, 166, 230])
     a, b = 50, 50
     p, m = 0, 0
+    image = pygame.image.load(r"./background.jpg")
+    screen.blit(image, (0, 0))
 
     for i in range(9):
         for j in range(9):
@@ -272,6 +270,7 @@ def background():
         p = 0
         m += 1
 
+    paint_game_restart()
     pygame.display.update()
 
 
@@ -281,6 +280,7 @@ if __name__ == "__main__":
         size = 5
         wide = 10
         n = 0        # 判断游戏是否结束的全局变量
+        r = 20       # 下子时鼠标点击的触发半径，单位px
         board = []
         white = [255, 255, 255]
         black = [0, 0, 0]
@@ -297,8 +297,8 @@ if __name__ == "__main__":
         pygame.display.init()
         screen = pygame.display.set_mode([550, 600])
         pygame.display.set_caption("tic_tac_toe")
-        my_font = pygame.font.Font("fzlt.ttf", 30)
-
+        my_font = pygame.font.Font("fzlt.ttf", 20)
+        game_restart_text = my_font.render("重新开始", True, black)
         # 刷新背景
         background()
 
@@ -318,7 +318,7 @@ if __name__ == "__main__":
         while True:
             for event in pygame.event.get():
                 mouse = pygame.mouse.get_pos()
-                # print(mouse[0], mouse[1])
+                print(mouse[0], mouse[1])
 
                 # # 通过判断先后手来更新右上角的提示
                 # if judge_sequence() == 1 and n == 0:
@@ -338,26 +338,25 @@ if __name__ == "__main__":
                     y = event.pos[1]
 
                     # 点击重新开始按钮
-                    if 600 <= mouse[0] <= 650 and 200 <= mouse[1] <= 400 and event.button == 1:
+                    if 100 < mouse[0] < 200 and 540 <= mouse[1] <= 570 and event.button == 1:
                         n = 1
 
                     # 通过鼠标坐标和其他条件来判断下(棋)子
                     if n == 0:
-                        if judge_board(mouse):
-                            if event.button == 1 and judge_sequence() == 1:
-                                print('OK!')
-                                paint_circle(mouse)
-                                judge_board(mouse, 1)
-                                pygame.display.update()
-                                play_black.update()
-                                play_white.update()
-                            elif event.button == 3 and judge_sequence() == 2:
-                                print('OK!')
-                                paint_circle(mouse)
-                                judge_board(mouse, 0)
-                                pygame.display.update()
-                                play_black.update()
-                                play_white.update()
+                        if (50 - r) < mouse[0] < (500 + r) and (50 - r) < mouse[1] < (500 + r):
+                            if judge_board(mouse):
+                                if event.button == 1 and judge_sequence() == 1:
+                                    paint_circle(mouse)
+                                    judge_board(mouse, 1)
+                                    pygame.display.update()
+                                    play_black.update()
+                                    play_white.update()
+                                elif event.button == 3 and judge_sequence() == 2:
+                                    paint_circle(mouse)
+                                    judge_board(mouse, 0)
+                                    pygame.display.update()
+                                    play_black.update()
+                                    play_white.update()
 
                     if n == 0:
                         if compute() == 1:
