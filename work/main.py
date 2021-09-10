@@ -1,4 +1,4 @@
-# tic_tac_toe
+# a mini-game for gobang(five-in-a-row)
 # -*- coding:UTF-8 -*-
 import tkinter.messagebox
 import pygame
