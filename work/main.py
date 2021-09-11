@@ -31,9 +31,9 @@ def judge_dogfall():
 # 判断谁是winner
 def judge_winner():
     if play_black.get_status():
-        return "player_o"
+        return "player_black"
     elif play_white.get_status():
-        return "player_x"
+        return "player_white"
 
 
 # 判断谁是loser
@@ -41,9 +41,9 @@ def judge_loser():
     if play_black.get_status() is None:
         return None
     if not play_black.get_status():
-        return "player_o"
+        return "player_black"
     elif not play_white.get_status():
-        return "player_x"
+        return "player_white"
 
 
 # 保存对局记录
@@ -58,9 +58,9 @@ def save_result():
                 if j == -1:
                     f.write("■\t")
                 elif j == 1:
-                    f.write("o\t")
+                    f.write("黑\t")
                 else:
-                    f.write("x\t")
+                    f.write("白\t")
             f.write("\n")
         f.write("\n")
 
@@ -120,16 +120,22 @@ def compute():
     result = -1
     # 检查行
     while (result == -1) and (i < wide):
-        num_of_x, num_of_o = 0, 0
+        num_of_black, num_of_white = 0, 0
         j = 0
         while j < wide:
             if board[i][j] == 1:
-                num_of_x += 1
+                if j > 0:
+                    if board[i][j-1] == 0 or board[i][j-1] == -1:
+                        num_of_black = 0
+                num_of_black += 1
             elif board[i][j] == 0:
-                num_of_o += 1
-            if num_of_o == size:
+                if j > 0:
+                    if board[i][j-1] == 1 or board[i][j-1] == -1:
+                        num_of_white = 0
+                num_of_white += 1
+            if num_of_white == size:
                 result = 0
-            elif num_of_x == size:
+            elif num_of_black == size:
                 result = 1
             j += 1
         i += 1
@@ -137,96 +143,126 @@ def compute():
     if result == -1:
         i, j = 0, 0
         while j < wide and result == -1:
-            num_of_x = num_of_o = 0
+            num_of_black = num_of_white = 0
             i = 0
             while i < wide:
                 if board[i][j] == 1:
-                    num_of_x += 1
+                    if i > 0:
+                        if board[i-1][j] == 0 or board[i-1][j] == -1:
+                            num_of_black = 0
+                    num_of_black += 1
                 elif board[i][j] == 0:
-                    num_of_o += 1
-                if num_of_o == size:
+                    if i > 0:
+                        if board[i-1][j] == 1 or board[i-1][j] == -1:
+                            num_of_white = 0
+                    num_of_white += 1
+                if num_of_white == size:
                     result = 0
-                elif num_of_x == size:
+                elif num_of_black == size:
                     result = 1
                 i += 1
             j += 1
     # 检查正对角线
     if result == -1:
-        x, y = 5, 0
-        while x >= 0:
-            num_of_o = num_of_x = 0
-            i, j = x, y
+        out_i, out_j = wide - 5, 0
+        while out_i >= 0:
+            num_of_white = num_of_black = 0
+            i, j = out_i, out_j
             while j < wide and i < wide:
                 if board[j][i] == 1:
-                    num_of_x += 1
+                    if i > 0:
+                        if board[j-1][i-1] == 0 or board[j-1][i-1] == -1:
+                            num_of_black = 0
+                    num_of_black += 1
                 elif board[j][i] == 0:
-                    num_of_o += 1
-                if num_of_o == size:
+                    if i > 0:
+                        if board[j-1][i-1] == 1 or board[j-1][i-1] == -1:
+                            num_of_white = 0
+                    num_of_white += 1
+                if num_of_white == size:
                     result = 0
                     return result
-                elif num_of_x == size:
+                elif num_of_black == size:
                     result = 1
                     return result
                 i += 1
                 j += 1
-            x -= 1
-        x, y = 0, 5
-        while y > 0:
-            num_of_o = num_of_x = 0
-            i, j = x, y
+            out_i -= 1
+        out_i, out_j = 0, wide - 5
+        while out_j > 0:
+            num_of_white = num_of_black = 0
+            i, j = out_i, out_j
             while j < wide and i < wide:
                 if board[j][i] == 1:
-                    num_of_x += 1
+                    if j > 0:
+                        if board[j-1][i-1] == 0 or board[j-1][i-1] == -1:
+                            num_of_black = 0
+                    num_of_black += 1
                 elif board[j][i] == 0:
-                    num_of_o += 1
-                if num_of_o == size:
+                    if j > 0:
+                        if board[j-1][i-1] == 1 or board[j-1][i-1] == -1:
+                            num_of_white = 0
+                    num_of_white += 1
+                if num_of_white == size:
                     result = 0
                     return result
-                elif num_of_x == size:
+                elif num_of_black == size:
                     result = 1
                     return result
                 i += 1
                 j += 1
-            y -= 1
+            out_j -= 1
 
     # 检查斜对角线
     if result == -1:
-        x, y = 0, 4
-        while y < wide:
-            num_of_o = num_of_x = 0
-            i, j = x, y
-            while j >= 0:
+        out_i, out_j = 4, 0
+        while out_i <= 9:
+            num_of_white = num_of_black = 0
+            i, j = out_i, out_j
+            while i >= 0:
                 if board[i][j] == 1:
-                    num_of_x += 1
+                    if j > 0:
+                        if board[i+1][j-1] == 0 or board[i+1][j-1] == -1:
+                            num_of_black = 0
+                    num_of_black += 1
                 elif board[i][j] == 0:
-                    num_of_o += 1
-                if num_of_o == size:
+                    if j > 0:
+                        if board[i+1][j-1] == 1 or board[i+1][j-1] == -1:
+                            num_of_white = 0
+                    num_of_white += 1
+                if num_of_white == size:
                     result = 0
                     return result
-                elif num_of_x == size:
+                elif num_of_black == size:
                     result = 1
                     return result
-                i += 1
-                j -= 1
-            y += 1
-        x, y = 5, 9
-        while x >= 0:
-            num_of_o = num_of_x = 0
-            i, j = x, y
-            while i < wide:
+                i -= 1
+                j += 1
+            out_i += 1
+        out_i, out_j = 9, 5
+        while out_j > 0:
+            num_of_white = num_of_black = 0
+            i, j = out_i, out_j
+            while j < wide:
                 if board[i][j] == 1:
-                    num_of_x += 1
+                    if i < 9:
+                        if board[i+1][j-1] == 0 or board[i+1][j-1] == -1:
+                            num_of_black = 0
+                    num_of_black += 1
                 elif board[i][j] == 0:
-                    num_of_o += 1
-                if num_of_o == size:
+                    if i < 9:
+                        if board[i+1][j-1] == 1 or board[i+1][j-1] == -1:
+                            num_of_white = 0
+                    num_of_white += 1
+                if num_of_white == size:
                     result = 0
                     return result
-                elif num_of_x == size:
+                elif num_of_black == size:
                     result = 1
                     return result
-                i += 1
-                j -= 1
-            x -= 1
+                i -= 1
+                j += 1
+            out_j -= 1
     return result
 
 
